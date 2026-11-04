@@ -6,6 +6,7 @@ import type {
   Destination,
   ListingCardData,
   ListingDetail,
+  Plan,
   SearchFilters,
   Tag,
 } from "./types";
@@ -233,4 +234,18 @@ export async function getListingBySlug(slug: string): Promise<ListingDetail | nu
     })),
     attributes,
   };
+}
+
+export async function getPlans(): Promise<Plan[]> {
+  "use cache";
+  cacheLife("hours");
+
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("plans")
+    .select("id, name, reference_price_ars, billing_period, max_listings, max_photos_per_listing, max_videos_per_listing, includes_featured, includes_advisory, includes_social, is_free, trial_days, sort_order")
+    .eq("active", true)
+    .order("sort_order");
+
+  return (data ?? []) as Plan[];
 }

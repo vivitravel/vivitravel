@@ -52,6 +52,22 @@ export type ListingDetail = ListingCardData & {
   attributes: { label: string; value: unknown; icon: string | null }[];
 };
 
+export type Plan = {
+  id: string;
+  name: string;
+  reference_price_ars: number;
+  billing_period: string | null;
+  max_listings: number;
+  max_photos_per_listing: number;
+  max_videos_per_listing: number;
+  includes_featured: boolean;
+  includes_advisory: boolean;
+  includes_social: boolean;
+  is_free: boolean;
+  trial_days: number | null;
+  sort_order: number;
+};
+
 export type AttributeDef = {
   id: string;
   key: string;
