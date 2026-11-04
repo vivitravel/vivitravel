@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Bed, Briefcase, Mountain, Tent, Utensils } from "lucide-react";
+import { DestinationCard } from "@/components/DestinationCard";
 import { ListingCard } from "@/components/ListingCard";
 import { SearchForm } from "@/components/SearchForm";
 import { getCategories, getDestinations, getFeaturedListings, getTags } from "@/lib/data";
@@ -16,8 +18,17 @@ const CATEGORY_ICON: Record<string, typeof Bed> = {
 export default function Home() {
   return (
     <>
-      <section className="bg-gradient-to-br from-navy via-petrol to-turquoise text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
+      <section className="relative isolate overflow-hidden bg-navy text-white">
+        <Image
+          src="/images/portada.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="-z-20 object-cover object-center"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-navy/70 via-navy/35 to-navy/65" aria-hidden />
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-32">
           <h1 className="text-4xl font-extrabold md:text-5xl">Descubrí. Explorá. Viví.</h1>
           <p className="mt-3 max-w-xl text-lg text-white/90">
             Todos los destinos, en un solo lugar. Encontrá propuestas de toda la Argentina y contactá
@@ -81,13 +92,7 @@ async function FeaturedDestinations() {
       <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {destinations.map((d) => (
           <li key={d.id}>
-            <Link
-              href={`/destinos/${d.slug}`}
-              className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-card bg-gradient-to-br from-petrol to-navy p-4 text-white"
-            >
-              <span className="text-lg font-bold group-hover:underline">{d.name}</span>
-              <span className="text-sm text-white/80">{d.province}</span>
-            </Link>
+            <DestinationCard destination={d} />
           </li>
         ))}
       </ul>

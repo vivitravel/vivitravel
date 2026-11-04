@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -37,8 +38,12 @@ async function Content({ params }: Pick<Props, "params">) {
 
   return (
     <main>
-      <section className="bg-gradient-to-br from-navy to-petrol text-white">
-        <div className="mx-auto max-w-6xl px-4 py-12">
+      <section className="relative isolate overflow-hidden bg-navy text-white">
+        {destination.photo_url && (
+          <Image src={destination.photo_url} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />
+        )}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-navy/85 via-navy/40 to-navy/20" aria-hidden />
+        <div className="mx-auto max-w-6xl px-4 py-20">
           <p className="text-sm text-white/80">{destination.province}</p>
           <h1 className="text-4xl font-extrabold">{destination.name}</h1>
           <div className="mt-5 flex flex-wrap gap-2">

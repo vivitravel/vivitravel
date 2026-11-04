@@ -38,7 +38,7 @@ export async function SearchForm({
           ))}
         </select>
       </label>
-      <button type="submit" className="btn btn-primary">
+      <button type="submit" className="btn btn-secondary">
         <Search size={18} aria-hidden /> Buscar
       </button>
     </form>

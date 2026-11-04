@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
+import { DestinationCard } from "@/components/DestinationCard";
 import { getDestinations } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -26,13 +26,7 @@ async function DestinationGrid() {
     <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
       {destinations.map((d) => (
         <li key={d.id}>
-          <Link
-            href={`/destinos/${d.slug}`}
-            className="group flex aspect-[4/5] flex-col justify-end rounded-card bg-gradient-to-br from-petrol to-navy p-4 text-white"
-          >
-            <span className="text-lg font-bold group-hover:underline">{d.name}</span>
-            <span className="text-sm text-white/80">{d.province}</span>
-          </Link>
+          <DestinationCard destination={d} />
         </li>
       ))}
     </ul>
