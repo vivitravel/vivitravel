@@ -52,6 +52,15 @@ export type ListingDetail = ListingCardData & {
   attributes: { label: string; value: unknown; icon: string | null }[];
 };
 
+export type AttributeDef = {
+  id: string;
+  key: string;
+  label: string;
+  type: "select" | "multiselect" | "number" | "text" | "boolean";
+  options: string[] | null;
+  sort_order: number;
+};
+
 export type SearchFilters = {
   q?: string;
   destino?: string;
@@ -60,4 +69,5 @@ export type SearchFilters = {
   min?: number;
   max?: number;
   orden?: "recomendados" | "precio_asc" | "precio_desc";
+  attrs?: Record<string, string | string[]>;
 };

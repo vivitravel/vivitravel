@@ -1,6 +1,7 @@
 import { cacheLife } from "next/cache";
 import { createPublicClient } from "./supabase/public";
 import type {
+  AttributeDef,
   Category,
   Destination,
   ListingCardData,
@@ -85,6 +86,28 @@ export async function getCategories(): Promise<Category[]> {
   return (data ?? []) as Category[];
 }
 
+export async function getCategoryAttributes(categorySlug: string): Promise<AttributeDef[]> {
+  "use cache";
+  cacheLife("hours");
+  const db = createPublicClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await db
+    .from("attributes")
+    .select("id, key, label, type, options, sort_order, categories!inner(slug)")
+    .eq("categories.slug", categorySlug)
+    .eq("filterable", true)
+    .order("sort_order");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((a: any) => ({
+    id: a.id,
+    key: a.key,
+    label: a.label,
+    type: a.type as AttributeDef["type"],
+    options: Array.isArray(a.options) ? a.options : null,
+    sort_order: a.sort_order,
+  }));
+}
+
 export async function getTags(): Promise<Tag[]> {
   "use cache";
   cacheLife("hours");
@@ -132,6 +155,33 @@ export async function searchListings(filters: SearchFilters): Promise<ListingCar
   }
   if (filters.min !== undefined) query = query.gte("price_from", filters.min);
   if (filters.max !== undefined) query = query.lte("price_from", filters.max);
+
+  if (filters.attrs) {
+    for (const [key, rawVal] of Object.entries(filters.attrs)) {
+      const vals = (Array.isArray(rawVal) ? rawVal : [rawVal]).filter(Boolean);
+      if (!vals.length) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: avRows } = await db
+        .from("listing_attribute_values")
+        .select("listing_id, value, attributes!inner(key)")
+        .eq("attributes.key", key);
+
+      if (!avRows) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const matchingIds = avRows
+        .filter((row: any) => {
+          const v = row.value;
+          if (Array.isArray(v)) return vals.some((val) => v.includes(val));
+          return vals.includes(typeof v === "string" ? v : String(v));
+        })
+        .map((row: any) => row.listing_id as string);
+
+      if (matchingIds.length === 0) return [];
+      query = query.in("id", matchingIds);
+    }
+  }
 
   if (filters.orden === "precio_asc") query = query.order("price_from", { ascending: true });
   else if (filters.orden === "precio_desc") query = query.order("price_from", { ascending: false });

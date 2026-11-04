@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Menu } from "lucide-react";
 import { getCategories } from "@/lib/data";
 import { Logo } from "./Logo";
+import { AuthButtons } from "./AuthButtons";
 
 export async function SiteHeader() {
   const categories = await getCategories();
@@ -27,7 +29,12 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <details className="relative lg:hidden">
+        <div className="flex items-center gap-3">
+          <Suspense fallback={<div className="h-8 w-24 animate-pulse rounded-lg bg-surface" />}>
+            <AuthButtons />
+          </Suspense>
+
+          <details className="relative lg:hidden">
           <summary
             aria-label="Abrir menú"
             className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-border-soft"
@@ -45,6 +52,7 @@ export async function SiteHeader() {
             ))}
           </nav>
         </details>
+        </div>
       </div>
     </header>
   );

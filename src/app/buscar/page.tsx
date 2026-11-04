@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { LayoutGrid, List } from "lucide-react";
 import { ListingCard } from "@/components/ListingCard";
 import { SearchForm } from "@/components/SearchForm";
-import { searchListings } from "@/lib/data";
-import type { SearchFilters } from "@/lib/types";
+import { getCategoryAttributes, searchListings } from "@/lib/data";
+import type { AttributeDef, SearchFilters } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Buscar propuestas" };
 
@@ -33,18 +33,33 @@ export default function BuscarPage({ searchParams }: PageProps<"/buscar">) {
 async function Results({ searchParams }: { searchParams: Promise<Params> }) {
   const sp = await searchParams;
   const orden = one(sp.orden);
+  const categoria = one(sp.categoria);
+
+  // Collect attr_* params from the URL
+  const attrs: Record<string, string | string[]> = {};
+  for (const [k, v] of Object.entries(sp)) {
+    if (k.startsWith("attr_") && v) {
+      const key = k.slice(5);
+      attrs[key] = Array.isArray(v) ? v.filter(Boolean) : v;
+    }
+  }
+
   const filters: SearchFilters = {
     q: one(sp.q),
     destino: one(sp.destino),
-    categoria: one(sp.categoria),
+    categoria,
     tema: one(sp.tema),
     min: num(sp.min),
     max: num(sp.max),
     orden: orden === "precio_asc" || orden === "precio_desc" ? orden : "recomendados",
+    attrs: Object.keys(attrs).length ? attrs : undefined,
   };
   const vista = one(sp.vista) === "galeria" ? "galeria" : "listado";
 
-  const listings = await searchListings(filters);
+  const [listings, catAttrs] = await Promise.all([
+    searchListings(filters),
+    categoria ? getCategoryAttributes(categoria) : Promise.resolve([] as AttributeDef[]),
+  ]);
 
   const withView = (v: string) => {
     const p = new URLSearchParams();
@@ -71,6 +86,49 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
           <input type="hidden" name="vista" value={vista} />
 
           <p className="font-bold">Filtros</p>
+
+          {/* Atributos por categoría */}
+          {catAttrs.map((attr) => {
+            if (!attr.options || (attr.type !== "select" && attr.type !== "multiselect")) return null;
+            return (
+            <fieldset key={attr.key} className="space-y-2">
+              <legend className="mb-1 text-sm font-semibold">{attr.label}</legend>
+              {attr.type === "select" && attr.options ? (
+                <select
+                  name={`attr_${attr.key}`}
+                  defaultValue={typeof attrs[attr.key] === "string" ? (attrs[attr.key] as string) : ""}
+                  className={input}
+                >
+                  <option value="">Cualquiera</option>
+                  {attr.options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : attr.type === "multiselect" && attr.options ? (
+                <div className="space-y-1.5">
+                  {attr.options.map((opt) => {
+                    const selected = Array.isArray(attrs[attr.key])
+                      ? (attrs[attr.key] as string[]).includes(opt)
+                      : attrs[attr.key] === opt;
+                    return (
+                      <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          name={`attr_${attr.key}`}
+                          value={opt}
+                          defaultChecked={selected}
+                          className="h-4 w-4 rounded border-border-soft accent-turquoise"
+                        />
+                        {opt}
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </fieldset>
+          )})}
+
+
           <fieldset className="space-y-2">
             <legend className="mb-1 text-sm font-semibold">Precio desde (ARS)</legend>
             <div className="grid grid-cols-2 gap-2">
@@ -94,7 +152,12 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
           </label>
           <div className="flex gap-2">
             <button type="submit" className="btn btn-secondary flex-1 !py-2 text-sm">Aplicar</button>
-            <Link href="/buscar" className="btn btn-ghost !py-2 text-sm">Limpiar</Link>
+            <Link
+              href={filters.categoria ? `/buscar?categoria=${filters.categoria}` : "/buscar"}
+              className="btn btn-ghost !py-2 text-sm"
+            >
+              Limpiar
+            </Link>
           </div>
         </form>
       </aside>
