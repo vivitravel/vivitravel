@@ -7,6 +7,7 @@ import { ListingCard } from "@/components/ListingCard";
 import { SearchForm } from "@/components/SearchForm";
 import { siteAssetUrl } from "@/lib/format";
 import { getCategories, getDestinations, getFeaturedListings, getSiteSettings, getTags } from "@/lib/data";
+import { getMyFavoriteIds } from "@/lib/user-data";
 
 const CATEGORY_ICON: Record<string, typeof Bed> = {
   alojamientos: Bed,
@@ -130,7 +131,7 @@ async function Themes() {
 }
 
 async function Recommended() {
-  const listings = await getFeaturedListings(8);
+  const [listings, favoriteIds] = await Promise.all([getFeaturedListings(8), getMyFavoriteIds()]);
   return (
     <section className="mx-auto max-w-6xl px-4 pt-14">
       <h2 className="mb-5 text-2xl font-bold">Propuestas recomendadas</h2>
@@ -138,7 +139,7 @@ async function Recommended() {
         <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {listings.map((l) => (
             <li key={l.id}>
-              <ListingCard listing={l} />
+              <ListingCard listing={l} isFavorited={favoriteIds.has(l.id)} />
             </li>
           ))}
         </ul>

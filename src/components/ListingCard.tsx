@@ -3,13 +3,16 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { formatPrice, mediaUrl, priceUnitLabel } from "@/lib/format";
 import type { ListingCardData } from "@/lib/types";
+import { FavoriteButton } from "./FavoriteButton";
 
 export function ListingCard({
   listing,
   layout = "grid",
+  isFavorited = false,
 }: {
   listing: ListingCardData;
   layout?: "grid" | "row";
+  isFavorited?: boolean;
 }) {
   const cover = mediaUrl(listing.cover);
   const unit = priceUnitLabel(listing.price_unit);
@@ -35,6 +38,9 @@ export function ListingCard({
             Destacado
           </span>
         )}
+        <div className="absolute right-3 top-3">
+          <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
+        </div>
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">

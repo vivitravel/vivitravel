@@ -8,6 +8,8 @@ import { Facebook, Instagram } from "@/components/icons";
 import { TrackedLink, ViewTracker } from "@/components/tracking";
 import { externalUrl, formatPrice, mediaUrl, priceUnitLabel, whatsappLink } from "@/lib/format";
 import { getListingBySlug } from "@/lib/data";
+import { getMyFavoriteIds } from "@/lib/user-data";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 type Props = PageProps<"/publicacion/[slug]">;
 
@@ -40,7 +42,7 @@ function renderValue(value: unknown) {
 
 async function Content({ params }: Pick<Props, "params">) {
   const { slug } = await params;
-  const l = await getListingBySlug(slug);
+  const [l, favoriteIds] = await Promise.all([getListingBySlug(slug), getMyFavoriteIds()]);
   if (!l) notFound();
 
   const unit = priceUnitLabel(l.price_unit);
@@ -166,6 +168,8 @@ async function Content({ params }: Pick<Props, "params">) {
               <span className="text-2xl font-bold">{formatPrice(l.price_from)}</span>
               {unit && <span className="text-muted"> {unit}</span>}
             </p>
+
+            <FavoriteButton listingId={l.id} initialFavorited={favoriteIds.has(l.id)} size="detail" />
 
             <div className="grid gap-2">
               {p?.whatsapp && (

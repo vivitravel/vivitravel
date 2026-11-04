@@ -6,6 +6,7 @@ import { ListingCard } from "@/components/ListingCard";
 import { SearchForm } from "@/components/SearchForm";
 import { getCategoryAttributes, searchListings } from "@/lib/data";
 import type { AttributeDef, SearchFilters } from "@/lib/types";
+import { getMyFavoriteIds } from "@/lib/user-data";
 
 export const metadata: Metadata = { title: "Buscar propuestas" };
 
@@ -56,9 +57,10 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
   };
   const vista = one(sp.vista) === "galeria" ? "galeria" : "listado";
 
-  const [listings, catAttrs] = await Promise.all([
+  const [listings, catAttrs, favoriteIds] = await Promise.all([
     searchListings(filters),
     categoria ? getCategoryAttributes(categoria) : Promise.resolve([] as AttributeDef[]),
+    getMyFavoriteIds(),
   ]);
 
   const withView = (v: string) => {
@@ -196,7 +198,7 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
           <ul className={vista === "galeria" ? "grid gap-5 sm:grid-cols-2 xl:grid-cols-3" : "space-y-4"}>
             {listings.map((l) => (
               <li key={l.id}>
-                <ListingCard listing={l} layout={vista === "galeria" ? "grid" : "row"} />
+                <ListingCard listing={l} layout={vista === "galeria" ? "grid" : "row"} isFavorited={favoriteIds.has(l.id)} />
               </li>
             ))}
           </ul>

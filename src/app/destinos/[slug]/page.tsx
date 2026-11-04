@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ListingCard } from "@/components/ListingCard";
 import { siteAssetUrl } from "@/lib/format";
 import { getCategories, getDestinationBySlug, searchListings } from "@/lib/data";
+import { getMyFavoriteIds } from "@/lib/user-data";
 
 type Props = PageProps<"/destinos/[slug]">;
 
@@ -32,9 +33,10 @@ async function Content({ params }: Pick<Props, "params">) {
   const destination = await getDestinationBySlug(slug);
   if (!destination) notFound();
 
-  const [listings, categories] = await Promise.all([
+  const [listings, categories, favoriteIds] = await Promise.all([
     searchListings({ destino: slug }),
     getCategories(),
+    getMyFavoriteIds(),
   ]);
 
   return (
@@ -67,7 +69,7 @@ async function Content({ params }: Pick<Props, "params">) {
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {listings.map((l) => (
               <li key={l.id}>
-                <ListingCard listing={l} />
+                <ListingCard listing={l} isFavorited={favoriteIds.has(l.id)} />
               </li>
             ))}
           </ul>

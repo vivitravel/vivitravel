@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
+import { Heart } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import type { CurrentUser } from "@/lib/auth";
 
@@ -31,7 +33,24 @@ export function UserMenu({ user }: { user: CurrentUser }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-border-soft bg-white p-1 shadow-lg">
+          <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border-soft bg-white p-1 shadow-lg">
+            <Link
+              href="/viajero/favoritos"
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
+            >
+              <Heart size={14} /> Mis favoritos
+            </Link>
+            {user.rol === "prestador" || user.rol === "admin" ? (
+              <Link
+                href="/prestador"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
+              >
+                Portal del prestador
+              </Link>
+            ) : null}
+            <div className="my-1 border-t border-border-soft" />
             <button
               type="button"
               onClick={handleLogout}
