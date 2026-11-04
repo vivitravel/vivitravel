@@ -48,6 +48,7 @@ export default async function FavoritosPage() {
               featured: l.featured ?? false,
               cover,
               category: l.categories ?? null,
+              destination: null,
             };
             return (
               <li key={l.id}>
