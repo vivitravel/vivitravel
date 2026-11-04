@@ -20,14 +20,20 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data: perfil } = await supabase
     .from("profiles")
-    .select("nombre, rol")
+    .select("full_name, role")
     .eq("id", user.id)
     .single();
+
+  const roleMap: Record<string, CurrentUser["rol"]> = {
+    traveler: "viajero",
+    provider: "prestador",
+    admin: "admin",
+  };
 
   return {
     id: user.id,
     email: user.email!,
-    nombre: perfil?.nombre ?? null,
-    rol: (perfil?.rol as CurrentUser["rol"]) ?? "viajero",
+    nombre: (perfil?.full_name as string | null) ?? null,
+    rol: roleMap[(perfil?.role as string) ?? "traveler"] ?? "viajero",
   };
 }

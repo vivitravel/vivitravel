@@ -39,7 +39,7 @@ export async function registrar(prevState: string | null, formData: FormData) {
     email,
     password,
     options: {
-      data: { nombre },
+      data: { nombre, full_name: nombre },
     },
   });
 
