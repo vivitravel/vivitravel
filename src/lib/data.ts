@@ -1,0 +1,168 @@
+import { cacheLife } from "next/cache";
+import { createPublicClient } from "./supabase/public";
+import type {
+  Category,
+  Destination,
+  ListingCardData,
+  ListingDetail,
+  SearchFilters,
+  Tag,
+} from "./types";
+
+/* Lecturas públicas del catálogo. Usan el cliente anónimo: la seguridad la da RLS. */
+
+const CARD_COLUMNS =
+  "id, slug, title, locality, province, price_from, price_unit, featured";
+
+type MediaRow = { storage_path: string; is_cover: boolean; sort_order: number };
+
+function pickCover(media: MediaRow[] | null | undefined) {
+  if (!media?.length) return null;
+  const sorted = [...media].sort(
+    (a, b) => Number(b.is_cover) - Number(a.is_cover) || a.sort_order - b.sort_order,
+  );
+  return sorted[0].storage_path;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toCard(row: any): ListingCardData {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    locality: row.locality,
+    province: row.province,
+    price_from: Number(row.price_from),
+    price_unit: row.price_unit,
+    featured: row.featured,
+    category: row.categories ?? null,
+    destination: row.destinations ?? null,
+    cover: pickCover(row.listing_media),
+  };
+}
+
+export async function getDestinations(featuredOnly = false): Promise<Destination[]> {
+  "use cache";
+  cacheLife("hours");
+  const db = createPublicClient();
+  let query = db.from("destinations").select("*").order("sort_order");
+  if (featuredOnly) query = query.eq("featured", true);
+  const { data } = await query;
+  return (data ?? []) as Destination[];
+}
+
+export async function getDestinationBySlug(slug: string): Promise<Destination | null> {
+  "use cache";
+  cacheLife("hours");
+  const db = createPublicClient();
+  const { data } = await db.from("destinations").select("*").eq("slug", slug).maybeSingle();
+  return (data as Destination) ?? null;
+}
+
+export async function getCategories(): Promise<Category[]> {
+  "use cache";
+  cacheLife("hours");
+  const db = createPublicClient();
+  const { data } = await db.from("categories").select("*").order("sort_order");
+  return (data ?? []) as Category[];
+}
+
+export async function getTags(): Promise<Tag[]> {
+  "use cache";
+  cacheLife("hours");
+  const db = createPublicClient();
+  const { data } = await db.from("tags").select("id, name, slug").order("sort_order");
+  return (data ?? []) as Tag[];
+}
+
+export async function getFeaturedListings(limit = 8): Promise<ListingCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  const db = createPublicClient();
+  const { data } = await db
+    .from("listings")
+    .select(`${CARD_COLUMNS}, categories(name, slug), destinations(name, slug), listing_media(storage_path, is_cover, sort_order)`)
+    .eq("status", "published")
+    .order("featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []).map(toCard);
+}
+
+export async function searchListings(filters: SearchFilters): Promise<ListingCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  const db = createPublicClient();
+
+  const destJoin = filters.destino ? "destinations!inner(name, slug)" : "destinations(name, slug)";
+  const catJoin = filters.categoria ? "categories!inner(name, slug)" : "categories(name, slug)";
+  const tagJoin = filters.tema ? ", listing_tags!inner(tags!inner(slug))" : "";
+
+  let query = db
+    .from("listings")
+    .select(
+      `${CARD_COLUMNS}, ${catJoin}, ${destJoin}, listing_media(storage_path, is_cover, sort_order)${tagJoin}`,
+    )
+    .eq("status", "published");
+
+  if (filters.destino) query = query.eq("destinations.slug", filters.destino);
+  if (filters.categoria) query = query.eq("categories.slug", filters.categoria);
+  if (filters.tema) query = query.eq("listing_tags.tags.slug", filters.tema);
+  if (filters.q) {
+    const term = filters.q.replace(/[%,()]/g, " ").trim();
+    if (term) query = query.or(`title.ilike.%${term}%,locality.ilike.%${term}%`);
+  }
+  if (filters.min !== undefined) query = query.gte("price_from", filters.min);
+  if (filters.max !== undefined) query = query.lte("price_from", filters.max);
+
+  if (filters.orden === "precio_asc") query = query.order("price_from", { ascending: true });
+  else if (filters.orden === "precio_desc") query = query.order("price_from", { ascending: false });
+  else query = query.order("featured", { ascending: false }).order("created_at", { ascending: false });
+
+  const { data } = await query.limit(60);
+  return (data ?? []).map(toCard);
+}
+
+export async function getListingBySlug(slug: string): Promise<ListingDetail | null> {
+  "use cache";
+  cacheLife("minutes");
+  const db = createPublicClient();
+  const { data } = await db
+    .from("listings")
+    .select(
+      `${CARD_COLUMNS}, description, address, lat, lng,
+       categories(name, slug), destinations(name, slug),
+       providers(business_name, whatsapp, instagram, facebook, website, email, phone),
+       listing_media(storage_path, alt_text, is_cover, sort_order),
+       listing_attribute_values(value, attributes(label, icon, sort_order))`,
+    )
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (!data) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row: any = data;
+  const media = [...(row.listing_media ?? [])].sort(
+    (a: MediaRow, b: MediaRow) => Number(b.is_cover) - Number(a.is_cover) || a.sort_order - b.sort_order,
+  );
+  const attributes = [...(row.listing_attribute_values ?? [])]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .sort((a: any, b: any) => (a.attributes?.sort_order ?? 0) - (b.attributes?.sort_order ?? 0))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((v: any) => ({ label: v.attributes?.label ?? "", icon: v.attributes?.icon ?? null, value: v.value }));
+
+  return {
+    ...toCard(row),
+    description: row.description,
+    address: row.address,
+    lat: row.lat,
+    lng: row.lng,
+    provider: row.providers ?? null,
+    media: media.map((m: { storage_path: string; alt_text: string | null }) => ({
+      storage_path: m.storage_path,
+      alt_text: m.alt_text,
+    })),
+    attributes,
+  };
+}
