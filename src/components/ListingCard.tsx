@@ -39,10 +39,10 @@ export function ListingCard({
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         {listing.category && (
-          <p className="text-xs font-medium uppercase tracking-wider text-turquoise">{listing.category.name}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-turquoise">{listing.category.name}</p>
         )}
         <h3 className="text-lg font-bold leading-snug">
-          <Link href={`/publicacion/${listing.slug}`} className="hover:text-petrol">
+          <Link href={`/publicacion/${listing.slug}`} className="hover:text-turquoise">
             {listing.title}
           </Link>
         </h3>

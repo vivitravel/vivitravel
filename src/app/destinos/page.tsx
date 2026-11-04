@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function DestinosPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl font-extrabold">Destinos</h1>
+      <h1 className="text-3xl font-bold">Destinos</h1>
       <p className="mb-8 text-muted">Elegí un destino y descubrí qué hacer, dónde alojarte y dónde comer.</p>
       <Suspense>
         <DestinationGrid />

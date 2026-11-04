@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
-/* Tokens de marca VIVITRAVELS (manual de identidad, edición 01, oct 2026).
-   Los colores son estimados según el propio manual: validar con el archivo maestro. */
+/* Tokens de marca VIVITRAVELS: guía de identidad digital del 28/10/2026 (la que vale).
+   Propuesta operativa del cliente: no certificada contra el archivo maestro del logo. */
 :root {
-  --vt-navy: #062747;       /* identidad y texto */
-  --vt-turquoise: #008aa8;  /* marca, enlaces, íconos */
-  --vt-petrol: #006783;     /* paisaje y acentos; botón secundario */
-  --vt-orange: #ff9b24;     /* sol y destacados; botón principal */
-  --vt-sky: #58bce2;        /* agua y apoyo */
+  --vt-navy: #092b4d;       /* títulos y texto */
+  --vt-turquoise: #087f9d;  /* enlaces y botón secundario */
+  --vt-cyan: #00a0bc;       /* detalles (decorativo: no usar para texto chico) */
+  --vt-orange: #ff991f;     /* llamadas a la acción */
+  --vt-white: #ffffff;      /* fondos */
 
-  /* Neutros y superficies (definidos por Alora, no vienen del manual) */
+  /* Neutros y superficies (definidos por Alora, no vienen de la guía) */
   --vt-bg: #ffffff;
   --vt-surface: #eaf4fb;
   --vt-border: #d5e3ee;
-  --vt-muted: #5b6b7f;
+  --vt-muted: #566579;
 
   /* Estados */
   --vt-success: #1f8a4c;
@@ -24,9 +24,8 @@
 @theme inline {
   --color-navy: var(--vt-navy);
   --color-turquoise: var(--vt-turquoise);
-  --color-petrol: var(--vt-petrol);
   --color-orange: var(--vt-orange);
-  --color-sky: var(--vt-sky);
+  --color-cyan: var(--vt-cyan);
   --color-surface: var(--vt-surface);
   --color-border-soft: var(--vt-border);
   --color-muted: var(--vt-muted);
@@ -46,8 +45,8 @@ body {
 
 h1, h2, h3 { font-weight: 700; }
 
-/* Botones: Montserrat Medium. El principal usa texto azul marino sobre naranja
-   (el blanco sobre #FF9B24 da ~2:1 de contraste y no cumple accesibilidad). */
+/* Botones y navegación: Montserrat 600. El principal usa texto azul marino sobre naranja
+   (el blanco sobre #FF991F da ~2:1 de contraste y no cumple accesibilidad). */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -55,11 +54,11 @@ h1, h2, h3 { font-weight: 700; }
   gap: 0.5rem;
   border-radius: 0.75rem;
   padding: 0.65rem 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: filter 0.15s;
 }
 .btn:hover { filter: brightness(0.95); }
-.btn:focus-visible { outline: 3px solid var(--vt-sky); outline-offset: 2px; }
+.btn:focus-visible { outline: 3px solid var(--vt-cyan); outline-offset: 2px; }
 .btn-primary { background: var(--vt-orange); color: var(--vt-navy); }
-.btn-secondary { background: var(--vt-petrol); color: #ffffff; }
-.btn-ghost { background: transparent; color: var(--vt-petrol); border: 1px solid var(--vt-petrol); }
+.btn-secondary { background: var(--vt-turquoise); color: #ffffff; }
+.btn-ghost { background: transparent; color: var(--vt-turquoise); border: 1px solid var(--vt-turquoise); }

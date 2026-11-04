@@ -19,7 +19,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3">
         <Logo />
 
-        <nav aria-label="Principal" className="hidden items-center gap-6 text-sm font-medium lg:flex">
+        <nav aria-label="Principal" className="hidden items-center gap-6 text-sm font-semibold lg:flex">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="text-navy hover:text-turquoise">
               {l.label}
@@ -39,7 +39,7 @@ export async function SiteHeader() {
             className="absolute right-0 mt-2 flex w-56 flex-col rounded-xl border border-border-soft bg-white p-2 shadow-lg"
           >
             {links.map((l) => (
-              <Link key={l.href} href={l.href} className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface">
+              <Link key={l.href} href={l.href} className="rounded-lg px-3 py-2 text-sm font-semibold hover:bg-surface">
                 {l.label}
               </Link>
             ))}

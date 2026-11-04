@@ -59,6 +59,24 @@ export async function getDestinationBySlug(slug: string): Promise<Destination | 
   return (data as Destination) ?? null;
 }
 
+export type SiteSettings = { hero_image: string; hero_title: string; hero_subtitle: string };
+
+// Textos e imágenes editables desde el panel de administración.
+export async function getSiteSettings(): Promise<SiteSettings> {
+  "use cache";
+  cacheLife("minutes");
+  const db = createPublicClient();
+  const { data } = await db.from("site_settings").select("key, value");
+  const map = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+  return {
+    hero_image: map.hero_image || "hero/portada.jpg",
+    hero_title: map.hero_title || "Descubrí. Explorá. Viví.",
+    hero_subtitle:
+      map.hero_subtitle ||
+      "Todos los destinos, en un solo lugar. Encontrá propuestas de toda la Argentina y contactá directo con los prestadores.",
+  };
+}
+
 export async function getCategories(): Promise<Category[]> {
   "use cache";
   cacheLife("hours");

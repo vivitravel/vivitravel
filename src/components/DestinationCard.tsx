@@ -1,16 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
+import { siteAssetUrl } from "@/lib/format";
 import type { Destination } from "@/lib/types";
 
 export function DestinationCard({ destination: d }: { destination: Destination }) {
   return (
     <Link
       href={`/destinos/${d.slug}`}
-      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-card bg-gradient-to-br from-petrol to-navy p-4 text-white"
+      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-card bg-gradient-to-br from-turquoise to-navy p-4 text-white"
     >
-      {d.photo_url && (
+      {siteAssetUrl(d.photo_url) && (
         <Image
-          src={d.photo_url}
+          src={siteAssetUrl(d.photo_url)!}
           alt=""
           fill
           sizes="(min-width: 768px) 25vw, 50vw"

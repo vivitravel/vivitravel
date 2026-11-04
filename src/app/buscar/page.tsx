@@ -22,7 +22,7 @@ const num = (v: string | string[] | undefined) => {
 export default function BuscarPage({ searchParams }: PageProps<"/buscar">) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-4 text-3xl font-extrabold">Buscar propuestas</h1>
+      <h1 className="mb-4 text-3xl font-bold">Buscar propuestas</h1>
       <Suspense fallback={<div className="h-40 animate-pulse rounded-card bg-surface" />}>
         <Results searchParams={searchParams} />
       </Suspense>
@@ -57,7 +57,7 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
   };
 
   const input =
-    "w-full rounded-xl border border-border-soft bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky";
+    "w-full rounded-xl border border-border-soft bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan";
 
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
@@ -72,7 +72,7 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
 
           <p className="font-bold">Filtros</p>
           <fieldset className="space-y-2">
-            <legend className="mb-1 text-sm font-medium">Precio desde (ARS)</legend>
+            <legend className="mb-1 text-sm font-semibold">Precio desde (ARS)</legend>
             <div className="grid grid-cols-2 gap-2">
               <label>
                 <span className="sr-only">Mínimo</span>
@@ -85,7 +85,7 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
             </div>
           </fieldset>
           <label className="block space-y-1">
-            <span className="text-sm font-medium">Ordenar por</span>
+            <span className="text-sm font-semibold">Ordenar por</span>
             <select name="orden" defaultValue={filters.orden} className={input}>
               <option value="recomendados">Recomendados</option>
               <option value="precio_asc">Menor precio</option>
@@ -115,14 +115,14 @@ async function Results({ searchParams }: { searchParams: Promise<Params> }) {
             <Link
               href={withView("listado")}
               aria-current={vista === "listado"}
-              className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ${vista === "listado" ? "bg-petrol text-white" : "border border-border-soft"}`}
+              className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ${vista === "listado" ? "bg-turquoise text-white" : "border border-border-soft"}`}
             >
               <List size={16} aria-hidden /> Listado
             </Link>
             <Link
               href={withView("galeria")}
               aria-current={vista === "galeria"}
-              className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ${vista === "galeria" ? "bg-petrol text-white" : "border border-border-soft"}`}
+              className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm ${vista === "galeria" ? "bg-turquoise text-white" : "border border-border-soft"}`}
             >
               <LayoutGrid size={16} aria-hidden /> Galería
             </Link>

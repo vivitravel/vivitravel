@@ -18,12 +18,16 @@ export function priceUnitLabel(unit: PriceUnit) {
   return UNIT_LABEL[unit];
 }
 
-// URL pública de una foto guardada en Supabase Storage (bucket "listing-media").
-export function mediaUrl(path: string | null | undefined) {
+// URL pública de un archivo de Supabase Storage.
+export function storageUrl(bucket: "listing-media" | "site-assets", path: string | null | undefined) {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-media/${path}`;
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
 }
+
+// Fotos de publicaciones (bucket "listing-media") y de la web: destinos, portada (bucket "site-assets").
+export const mediaUrl = (path: string | null | undefined) => storageUrl("listing-media", path);
+export const siteAssetUrl = (path: string | null | undefined) => storageUrl("site-assets", path);
 
 export function whatsappLink(number: string, message?: string) {
   const digits = number.replace(/\D/g, "");

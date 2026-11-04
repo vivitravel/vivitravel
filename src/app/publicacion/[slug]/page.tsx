@@ -128,7 +128,7 @@ async function Content({ params }: Pick<Props, "params">) {
                   if (text === undefined) return null;
                   return (
                     <li key={a.label} className="rounded-xl bg-surface px-3 py-2 text-sm">
-                      <span className="font-medium">{a.label}</span>
+                      <span className="font-semibold">{a.label}</span>
                       {text ? <span className="text-muted">: {text}</span> : null}
                     </li>
                   );
@@ -157,13 +157,13 @@ async function Content({ params }: Pick<Props, "params">) {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <div className="space-y-4 rounded-card border border-border-soft p-5 shadow-sm">
             {l.category && (
-              <p className="text-xs font-medium uppercase tracking-wider text-turquoise">{l.category.name}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-turquoise">{l.category.name}</p>
             )}
-            <h1 className="text-2xl font-extrabold leading-tight">{l.title}</h1>
+            <h1 className="text-2xl font-bold leading-tight">{l.title}</h1>
             {p && <p className="text-sm text-muted">Ofrece {p.business_name}</p>}
             <p>
               <span className="text-muted">Desde </span>
-              <span className="text-2xl font-extrabold">{formatPrice(l.price_from)}</span>
+              <span className="text-2xl font-bold">{formatPrice(l.price_from)}</span>
               {unit && <span className="text-muted"> {unit}</span>}
             </p>
 

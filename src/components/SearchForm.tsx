@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 import { getCategories, getDestinations } from "@/lib/data";
 
 const field =
-  "w-full rounded-xl border border-border-soft bg-white px-3 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-sky";
+  "w-full rounded-xl border border-border-soft bg-white px-3 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-cyan";
 
 // Formulario GET: funciona sin JavaScript y deja los filtros en la URL.
 export async function SearchForm({

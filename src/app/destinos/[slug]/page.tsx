@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ListingCard } from "@/components/ListingCard";
+import { siteAssetUrl } from "@/lib/format";
 import { getCategories, getDestinationBySlug, searchListings } from "@/lib/data";
 
 type Props = PageProps<"/destinos/[slug]">;
@@ -39,19 +40,19 @@ async function Content({ params }: Pick<Props, "params">) {
   return (
     <main>
       <section className="relative isolate overflow-hidden bg-navy text-white">
-        {destination.photo_url && (
-          <Image src={destination.photo_url} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />
+        {siteAssetUrl(destination.photo_url) && (
+          <Image src={siteAssetUrl(destination.photo_url)!} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />
         )}
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-navy/85 via-navy/40 to-navy/20" aria-hidden />
         <div className="mx-auto max-w-6xl px-4 py-20">
           <p className="text-sm text-white/80">{destination.province}</p>
-          <h1 className="text-4xl font-extrabold">{destination.name}</h1>
+          <h1 className="text-4xl font-bold">{destination.name}</h1>
           <div className="mt-5 flex flex-wrap gap-2">
             {categories.map((c) => (
               <Link
                 key={c.id}
                 href={`/buscar?destino=${slug}&categoria=${c.slug}`}
-                className="rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium hover:bg-white/25"
+                className="rounded-full bg-white/15 px-4 py-1.5 text-sm font-semibold hover:bg-white/25"
               >
                 {c.name}
               </Link>
