@@ -9,7 +9,9 @@ import { TrackedLink, ViewTracker } from "@/components/tracking";
 import { externalUrl, formatPrice, mediaUrl, priceUnitLabel, videoEmbedUrl, whatsappLink } from "@/lib/format";
 import { getListingBySlug } from "@/lib/data";
 import { getMyFavoriteIds } from "@/lib/user-data";
+import { getMyTrips } from "@/lib/trip-data";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { AddToTripButton } from "@/components/AddToTripButton";
 
 type Props = PageProps<"/publicacion/[slug]">;
 
@@ -54,7 +56,7 @@ function renderValue(value: unknown) {
 
 async function Content({ params }: Pick<Props, "params">) {
   const { slug } = await params;
-  const [l, favoriteIds] = await Promise.all([getListingBySlug(slug), getMyFavoriteIds()]);
+  const [l, favoriteIds, trips] = await Promise.all([getListingBySlug(slug), getMyFavoriteIds(), getMyTrips()]);
   if (!l) notFound();
 
   const unit = priceUnitLabel(l.price_unit);
@@ -287,6 +289,7 @@ async function Content({ params }: Pick<Props, "params">) {
             </p>
 
             <FavoriteButton listingId={l.id} initialFavorited={favoriteIds.has(l.id)} size="detail" />
+            <AddToTripButton listingId={l.id} trips={trips.map((t) => ({ id: t.id, title: t.title }))} />
 
             <div className="grid gap-2">
               {p?.whatsapp && (
