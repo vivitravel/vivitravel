@@ -2,7 +2,7 @@ export const instant = false;
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, PlusCircle, User, CreditCard } from "lucide-react";
+import { LayoutDashboard, PlusCircle, User, CreditCard, BarChart2 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function PrestadorLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +15,7 @@ export default async function PrestadorLayout({ children }: { children: React.Re
     { href: "/prestador", label: "Mis publicaciones", icon: LayoutDashboard },
     { href: "/prestador/publicaciones/nueva", label: "Nueva publicación", icon: PlusCircle },
     { href: "/prestador/perfil", label: "Mi perfil", icon: User },
+    { href: "/prestador/estadisticas", label: "Estadísticas", icon: BarChart2 },
     { href: "/prestador/plan", label: "Mi plan", icon: CreditCard },
   ];
 
