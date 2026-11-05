@@ -11,13 +11,25 @@ const montserrat = Montserrat({
   weight: ["400", "600", "700"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vivitravel.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Vivitravels | Viví más destinos",
     template: "%s | Vivitravels",
   },
   description:
     "Descubrí destinos, alojamientos, actividades y gastronomía en toda la Argentina y contactá directo con los prestadores.",
+  openGraph: {
+    siteName: "Vivitravels",
+    locale: "es_AR",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

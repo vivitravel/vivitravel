@@ -15,13 +15,25 @@ type Props = PageProps<"/publicacion/[slug]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const listing = await getListingBySlug(slug);
-  if (!listing) return {};
-  const cover = mediaUrl(listing.cover);
+  const l = await getListingBySlug(slug);
+  if (!l) return {};
+  const cover = mediaUrl(l.cover);
+  const desc = (l.description ?? `${l.title} en ${l.locality}, ${l.province}. ${l.category?.name ?? ""}`).slice(0, 155);
   return {
-    title: `${listing.title} en ${listing.locality}`,
-    description: (listing.description ?? `${listing.title}, ${listing.locality}, ${listing.province}`).slice(0, 155),
-    openGraph: cover ? { images: [cover] } : undefined,
+    title: `${l.title} en ${l.locality}`,
+    description: desc,
+    openGraph: {
+      title: `${l.title} — ${l.locality}, ${l.province}`,
+      description: desc,
+      type: "website",
+      ...(cover ? { images: [{ url: cover, width: 1200, height: 630, alt: l.title }] } : {}),
+    },
+    twitter: {
+      card: cover ? "summary_large_image" : "summary",
+      title: l.title,
+      description: desc,
+      ...(cover ? { images: [cover] } : {}),
+    },
   };
 }
 
@@ -56,8 +68,77 @@ async function Content({ params }: Pick<Props, "params">) {
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${l.address}, ${l.locality}, ${l.province}`)}`
         : null;
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vivitravel.vercel.app";
+  const cover = mediaUrl(l.cover);
+
+  const listingType =
+    l.category?.slug === "alojamientos" ? "LodgingBusiness"
+    : l.category?.slug === "gastronomia" ? "FoodEstablishment"
+    : l.category?.slug === "camping" ? "Campground"
+    : "TouristAttraction";
+
+  const jsonLd = [
+    // Entidad principal: negocio / atracción
+    {
+      "@context": "https://schema.org",
+      "@type": listingType,
+      "@id": `${SITE_URL}/publicacion/${l.slug}#entity`,
+      name: l.title,
+      description: l.description ?? undefined,
+      url: `${SITE_URL}/publicacion/${l.slug}`,
+      image: cover ?? undefined,
+      inLanguage: "es-AR",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: l.address ?? undefined,
+        addressLocality: l.locality,
+        addressRegion: l.province,
+        addressCountry: "AR",
+      },
+      ...(l.lat != null && l.lng != null
+        ? { geo: { "@type": "GeoCoordinates", latitude: l.lat, longitude: l.lng } }
+        : {}),
+      ...(p?.whatsapp || p?.phone ? { telephone: p.whatsapp ?? p.phone ?? undefined } : {}),
+      ...(p?.website ? { sameAs: [p.website] } : {}),
+      ...(p?.instagram ? { sameAs: [`https://www.instagram.com/${p.instagram.replace(/^@/, "")}`] } : {}),
+      ...(l.price_from != null
+        ? {
+            priceRange: `desde ARS ${l.price_from.toLocaleString("es-AR")}`,
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "ARS",
+              price: l.price_from,
+              availability: "https://schema.org/InStock",
+            },
+          }
+        : {}),
+      touristType: l.category?.name ?? undefined,
+      ...(l.destination?.name
+        ? { containedInPlace: { "@type": "TouristDestination", name: l.destination.name, address: { "@type": "PostalAddress", addressCountry: "AR" } } }
+        : {}),
+    },
+    // BreadcrumbList
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Buscar", item: `${SITE_URL}/buscar` },
+        ...(l.category ? [{ "@type": "ListItem", position: 3, name: l.category.name, item: `${SITE_URL}/buscar?categoria=${l.category.slug}` }] : []),
+        { "@type": "ListItem", position: l.category ? 4 : 3, name: l.title, item: `${SITE_URL}/publicacion/${l.slug}` },
+      ],
+    },
+  ];
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
+      {jsonLd.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <ViewTracker listingId={l.id} />
 
       <nav aria-label="Ubicación" className="mb-4 text-sm text-muted">
