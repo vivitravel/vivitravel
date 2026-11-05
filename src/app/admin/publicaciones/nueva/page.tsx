@@ -106,6 +106,11 @@ export default async function NuevaPublicacionPage() {
             <textarea id="how_to_get_there" name="how_to_get_there" rows={2} className={inp} placeholder="Indicaciones para llegar…" />
           </div>
 
+          <div className="sm:col-span-2">
+            <label className={lbl} htmlFor="video_url">Video (YouTube o Instagram)</label>
+            <input id="video_url" name="video_url" type="url" className={inp} placeholder="https://www.youtube.com/watch?v=... o https://www.instagram.com/reel/..." />
+          </div>
+
           <div>
             <label className={lbl} htmlFor="status">Estado inicial</label>
             <select id="status" name="status" className={inp}>

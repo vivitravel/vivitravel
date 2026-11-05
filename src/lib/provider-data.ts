@@ -44,6 +44,7 @@ export type ProviderListingDetail = {
   website: string | null;
   email: string | null;
   phone: string | null;
+  video_url: string | null;
   attrValues: Record<string, unknown>;
   media: { id: string; storage_path: string; sort_order: number }[];
 };
@@ -83,7 +84,7 @@ export async function getMyListingById(listingId: string, providerId: string): P
   const supabase = await createClient();
   const { data } = await supabase
     .from("listings")
-    .select("id, title, slug, category_id, description, province, locality, price_from, price_unit, status, whatsapp, instagram, facebook, website, email, phone, listing_attribute_values(attribute_id, value, attributes(key)), listing_media(id, storage_path, sort_order)")
+    .select("id, title, slug, category_id, description, province, locality, price_from, price_unit, status, whatsapp, instagram, facebook, website, email, phone, video_url, listing_attribute_values(attribute_id, value, attributes(key)), listing_media(id, storage_path, sort_order)")
     .eq("id", listingId)
     .eq("provider_id", providerId)
     .maybeSingle();
@@ -111,6 +112,7 @@ export async function getMyListingById(listingId: string, providerId: string): P
     website: row.website,
     email: row.email,
     phone: row.phone,
+    video_url: row.video_url ?? null,
     attrValues,
     media: (row.listing_media ?? []).sort((a: any, b: any) => a.sort_order - b.sort_order),
   };

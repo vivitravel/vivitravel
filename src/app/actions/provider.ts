@@ -100,6 +100,7 @@ export async function saveListing(prevState: string | null, formData: FormData) 
     website: String(formData.get("website") ?? "").trim() || null,
     email: String(formData.get("email") ?? "").trim() || null,
     phone: String(formData.get("phone") ?? "").trim() || null,
+    video_url: String(formData.get("video_url") ?? "").trim() || null,
   };
 
   let savedListingId = listingId;

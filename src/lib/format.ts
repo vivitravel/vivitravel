@@ -40,3 +40,18 @@ export function externalUrl(value: string, base?: string) {
   if (base) return `${base}${value.replace(/^@/, "")}`;
   return `https://${value}`;
 }
+
+// Devuelve el embed URL de YouTube/Instagram, o null si no reconoce el formato.
+export function videoEmbedUrl(url: string): { type: "youtube" | "instagram"; embedUrl: string } | null {
+  // YouTube: watch?v=ID, youtu.be/ID, /embed/ID, /shorts/ID
+  const yt = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
+  );
+  if (yt) return { type: "youtube", embedUrl: `https://www.youtube.com/embed/${yt[1]}` };
+
+  // Instagram posts/reels: instagram.com/p/CODE o /reel/CODE
+  const ig = url.match(/instagram\.com\/(?:p|reel)\/([A-Za-z0-9_-]+)/);
+  if (ig) return { type: "instagram", embedUrl: url };
+
+  return null;
+}

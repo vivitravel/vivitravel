@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Globe, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { Facebook, Instagram } from "@/components/icons";
 import { TrackedLink, ViewTracker } from "@/components/tracking";
-import { externalUrl, formatPrice, mediaUrl, priceUnitLabel, whatsappLink } from "@/lib/format";
+import { externalUrl, formatPrice, mediaUrl, priceUnitLabel, videoEmbedUrl, whatsappLink } from "@/lib/format";
 import { getListingBySlug } from "@/lib/data";
 import { getMyFavoriteIds } from "@/lib/user-data";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -120,6 +120,42 @@ async function Content({ params }: Pick<Props, "params">) {
               <p className="whitespace-pre-line leading-relaxed">{l.description}</p>
             </section>
           )}
+
+          {l.video_url && (() => {
+            const vid = videoEmbedUrl(l.video_url);
+            if (!vid) return null;
+            if (vid.type === "youtube") {
+              return (
+                <section>
+                  <h2 className="mb-3 text-xl font-bold">Video</h2>
+                  <div className="relative aspect-video overflow-hidden rounded-card">
+                    <iframe
+                      src={vid.embedUrl}
+                      title="Video de la publicación"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 h-full w-full"
+                    />
+                  </div>
+                </section>
+              );
+            }
+            // Instagram: no admite iframe; mostramos botón de enlace
+            return (
+              <section>
+                <h2 className="mb-3 text-xl font-bold">Video</h2>
+                <a
+                  href={l.video_url!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary inline-flex gap-2"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.975 1.246 2.242 1.308 3.608.058 1.265.069 1.645.069 4.851s-.011 3.586-.069 4.851c-.062 1.366-.334 2.633-1.308 3.608-.975.974-2.242 1.246-3.608 1.308-1.265.058-1.645.069-4.85.069s-3.585-.011-4.851-.069c-1.366-.062-2.633-.334-3.608-1.308-.974-.975-1.246-2.242-1.308-3.608C2.175 15.586 2.163 15.206 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.974 2.242-1.246 3.608-1.308C8.415 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.014 7.052.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.052.014 8.332 0 8.741 0 12c0 3.259.014 3.668.072 4.948.085 1.855.601 3.697 1.942 5.038 1.341 1.341 3.183 1.857 5.038 1.942C8.332 23.986 8.741 24 12 24s3.668-.014 4.948-.072c1.855-.085 3.697-.601 5.038-1.942 1.341-1.341 1.857-3.183 1.942-5.038.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.085-1.855-.601-3.697-1.942-5.038C20.645.673 18.803.157 16.948.072 15.668.014 15.259 0 12 0z"/><path d="M12 5.838a6.162 6.162 0 1 0 0 12.324A6.162 6.162 0 0 0 12 5.838zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                  Ver en Instagram
+                </a>
+              </section>
+            );
+          })()}
 
           {l.attributes.length > 0 && (
             <section>

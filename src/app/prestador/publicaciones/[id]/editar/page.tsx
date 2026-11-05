@@ -39,6 +39,7 @@ export default async function EditarPage({ params }: { params: Promise<{ id: str
     website: listing.website,
     email: listing.email,
     phone: listing.phone,
+    video_url: listing.video_url ?? null,
     attrValues: listing.attrValues,
     mediaPaths: listing.media.map((m) => m.storage_path),
   };

@@ -58,6 +58,7 @@ export async function createEditorialListing(formData: FormData) {
   const official_url = formData.get("official_url") as string || null;
   const hours = formData.get("hours") as string || null;
   const how_to_get_there = formData.get("how_to_get_there") as string || null;
+  const video_url = formData.get("video_url") as string || null;
   const status = formData.get("status") as string || "draft";
 
   const slug = title.toLowerCase()
@@ -79,6 +80,7 @@ export async function createEditorialListing(formData: FormData) {
     official_url,
     hours,
     how_to_get_there,
+    video_url,
     status,
     provider_id: null,
     price_from: null,

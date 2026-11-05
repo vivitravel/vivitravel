@@ -199,7 +199,7 @@ export async function getListingBySlug(slug: string): Promise<ListingDetail | nu
   const { data } = await db
     .from("listings")
     .select(
-      `${CARD_COLUMNS}, description, address, lat, lng,
+      `${CARD_COLUMNS}, description, address, lat, lng, video_url,
        categories(name, slug), destinations(name, slug),
        providers(business_name, whatsapp, instagram, facebook, website, email, phone),
        listing_media(storage_path, alt_text, is_cover, sort_order),
@@ -227,6 +227,7 @@ export async function getListingBySlug(slug: string): Promise<ListingDetail | nu
     address: row.address,
     lat: row.lat,
     lng: row.lng,
+    video_url: row.video_url ?? null,
     provider: row.providers ?? null,
     media: media.map((m: { storage_path: string; alt_text: string | null }) => ({
       storage_path: m.storage_path,

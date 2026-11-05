@@ -39,6 +39,7 @@ type Props = {
     website: string | null;
     email: string | null;
     phone: string | null;
+    video_url: string | null;
     attrValues: Record<string, unknown>;
     mediaPaths: string[];
   };
@@ -74,6 +75,7 @@ export function PublicacionForm({ categories, providerId, initial }: Props) {
   const [website, setWebsite] = useState(initial?.website ?? "");
   const [emailContact, setEmailContact] = useState(initial?.email ?? "");
   const [phone, setPhone] = useState(initial?.phone ?? "");
+  const [videoUrl, setVideoUrl] = useState(initial?.video_url ?? "");
 
   // Step 3 state
   const [files, setFiles] = useState<File[]>([]);
@@ -147,6 +149,7 @@ export function PublicacionForm({ categories, providerId, initial }: Props) {
       fd.append("website", website);
       fd.append("email", emailContact);
       fd.append("phone", phone);
+      fd.append("video_url", videoUrl);
       fd.append("submit_action", submitAction);
 
       for (const [key, val] of Object.entries(attrValues)) {
@@ -304,6 +307,20 @@ export function PublicacionForm({ categories, providerId, initial }: Props) {
                 <span className={lblTxt}>Email</span>
                 <input className={input} type="email" value={emailContact} onChange={(e) => setEmailContact(e.target.value)} />
               </div>
+            </div>
+
+            <hr className="border-border-soft" />
+            <p className="font-semibold text-navy">Video</p>
+            <div className={lbl}>
+              <span className={lblTxt}>Link de YouTube o Instagram</span>
+              <input
+                className={input}
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=... o https://www.instagram.com/reel/..."
+              />
+              <span className="text-xs text-muted">El video se va a mostrar en la ficha de tu publicación.</span>
             </div>
           </div>
         )}

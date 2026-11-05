@@ -48,6 +48,7 @@ export type ListingDetail = ListingCardData & {
     email: string | null;
     phone: string | null;
   } | null;
+  video_url: string | null;
   media: { storage_path: string; alt_text: string | null }[];
   attributes: { label: string; value: unknown; icon: string | null }[];
 };
