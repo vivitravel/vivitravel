@@ -1,3 +1,5 @@
+export const instant = false;
+
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, PlusCircle, User, CreditCard } from "lucide-react";
