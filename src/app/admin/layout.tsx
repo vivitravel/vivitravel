@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, FileText, Building2, Users, MapPin, Tag, CreditCard } from "lucide-react";
