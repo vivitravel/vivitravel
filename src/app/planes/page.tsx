@@ -18,13 +18,17 @@ function formatPrice(n: number) {
   }).format(n);
 }
 
-const FEATURES: { key: keyof Plan; label: string; render?: (p: Plan) => string }[] = [
-  { key: "max_listings",           label: "Publicaciones activas",   render: (p) => `Hasta ${p.max_listings}` },
-  { key: "max_photos_per_listing", label: "Fotos por publicación",   render: (p) => `Hasta ${p.max_photos_per_listing}` },
-  { key: "max_videos_per_listing", label: "Videos por publicación",  render: (p) => p.max_videos_per_listing > 0 ? `Hasta ${p.max_videos_per_listing}` : "" },
-  { key: "includes_advisory",      label: "Asesoramiento comercial" },
-  { key: "includes_featured",      label: "Destacado en portada" },
-  { key: "includes_social",        label: "Difusión en redes" },
+type Feature =
+  | { type: "numeric"; key: "max_listings" | "max_photos_per_listing" | "max_videos_per_listing"; label: string; unit: string }
+  | { type: "boolean"; key: "includes_advisory" | "includes_featured" | "includes_social"; label: string };
+
+const FEATURES: Feature[] = [
+  { type: "numeric",  key: "max_listings",           label: "Publicación",        unit: "publicación"        },
+  { type: "numeric",  key: "max_photos_per_listing", label: "Fotos",              unit: "foto por publicación" },
+  { type: "numeric",  key: "max_videos_per_listing", label: "Videos",             unit: "video por publicación" },
+  { type: "boolean",  key: "includes_advisory",      label: "Asesoramiento"                           },
+  { type: "boolean",  key: "includes_featured",      label: "Destacado en portada"                    },
+  { type: "boolean",  key: "includes_social",        label: "Difusión en redes"                       },
 ];
 
 export default async function PlanesPage() {
@@ -62,7 +66,7 @@ export default async function PlanesPage() {
                 <div className="mb-4">
                   <h2 className="text-xl font-bold text-navy">{plan.name}</h2>
                   {plan.is_free && plan.trial_days && (
-                    <p className="text-xs text-muted">Prueba {plan.trial_days} días</p>
+                    <p className="text-xs text-muted">Activo {plan.trial_days} días, luego se pausa</p>
                   )}
                 </div>
 
@@ -74,23 +78,39 @@ export default async function PlanesPage() {
                 </div>
 
                 <ul className="mb-8 flex-1 space-y-2.5 text-sm">
-                  {FEATURES.map(({ key, label, render }) => {
-                    const val = plan[key];
-                    if (typeof val === "boolean") {
+                  {FEATURES.map((feature) => {
+                    if (feature.type === "boolean") {
+                      const val = plan[feature.key] as boolean;
                       return (
-                        <li key={key} className={`flex items-center gap-2 ${val ? "text-navy" : "text-muted/60"}`}>
+                        <li key={feature.key} className={`flex items-center gap-2 ${val ? "text-navy" : "text-muted/40 line-through"}`}>
                           {val
                             ? <Check size={15} className="shrink-0 text-turquoise" />
-                            : <X size={15} className="shrink-0 text-muted/40" />}
-                          {label}
+                            : <X size={15} className="shrink-0 text-muted/30" />}
+                          {feature.label}
                         </li>
                       );
                     }
-                    const text = render ? render(plan) : String(val);
+                    const n = plan[feature.key] as number;
+                    const active = n > 0;
                     return (
-                      <li key={key} className="flex items-center gap-2 text-navy">
-                        <Check size={15} className="shrink-0 text-turquoise" />
-                        <span>{text || label}</span>
+                      <li key={feature.key} className={`flex items-center gap-2 ${active ? "text-navy" : "text-muted/40 line-through"}`}>
+                        {active
+                          ? <Check size={15} className="shrink-0 text-turquoise" />
+                          : <X size={15} className="shrink-0 text-muted/30" />}
+                        <span>
+                          {active ? (
+                            <>
+                              <span className="font-semibold">{n}</span>{" "}
+                              {n === 1 ? feature.unit : feature.unit.replace(/^(\w+)/, (w) =>
+                                w === "publicación" ? "publicaciones" :
+                                w === "foto" ? "fotos" :
+                                w === "video" ? "videos" : w
+                              )}
+                            </>
+                          ) : (
+                            `Sin ${feature.unit.split(" ")[0]}s`
+                          )}
+                        </span>
                       </li>
                     );
                   })}
@@ -103,10 +123,10 @@ export default async function PlanesPage() {
                       ? "bg-turquoise text-white"
                       : plan.is_free
                         ? "border border-border-soft text-navy hover:bg-surface"
-                        : "btn-primary"
+                        : "bg-navy text-white hover:bg-navy/90"
                   }`}
                 >
-                  {plan.is_free ? "Probalo gratis" : "Empezar ahora"}
+                  {plan.is_free ? "Registrarme gratis" : "Registrarme"}
                 </Link>
               </div>
             );
