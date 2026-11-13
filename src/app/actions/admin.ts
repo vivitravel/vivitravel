@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendApprovalEmail, sendRejectionEmail } from "@/lib/email";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -16,11 +17,44 @@ async function requireAdmin() {
 
 // ── Publicaciones ──────────────────────────────────────────────
 
-export async function setListingStatus(listingId: string, status: string) {
+export async function setListingStatus(
+  listingId: string,
+  status: string,
+  rejectionReason?: string,
+) {
   await requireAdmin();
   const supabase = createAdminClient();
   const { error } = await supabase.from("listings").update({ status }).eq("id", listingId);
   if (error) throw new Error(error.message);
+
+  if (status === "published" || status === "rejected") {
+    const { data: listing } = await supabase
+      .from("listings")
+      .select("title, slug, providers(email, business_name)")
+      .eq("id", listingId)
+      .maybeSingle();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const provider = listing ? (listing as any).providers : null;
+    const email: string | null = provider?.email ?? null;
+
+    if (listing && email) {
+      if (status === "published") {
+        await sendApprovalEmail({
+          to: email,
+          listingTitle: listing.title,
+          listingSlug: listing.slug,
+        }).catch(console.error);
+      } else if (status === "rejected" && rejectionReason) {
+        await sendRejectionEmail({
+          to: email,
+          listingTitle: listing.title,
+          reason: rejectionReason,
+        }).catch(console.error);
+      }
+    }
+  }
+
   revalidatePath("/admin/publicaciones");
   revalidatePath("/admin");
 }
