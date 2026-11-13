@@ -1,4 +1,6 @@
+export const instant = false;
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { upsertCategory, deleteCategory } from "@/app/actions/admin";
 
@@ -16,6 +18,7 @@ async function getCategories() {
 }
 
 export default async function CategoriasPage() {
+  await connection();
   const categories = await getCategories();
 
   return (

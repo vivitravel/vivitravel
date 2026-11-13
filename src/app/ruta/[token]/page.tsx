@@ -1,3 +1,5 @@
+export const instant = false;
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -5,6 +7,8 @@ import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { getTripByToken } from "@/lib/trip-data";
 import { mediaUrl } from "@/lib/format";
+import { TripMap } from "@/components/TripMap";
+import { PrintButton } from "./PrintButton";
 
 export async function generateMetadata({
   params,
@@ -37,6 +41,16 @@ export default async function RutaPublicaPage({
   }, {});
   const dayNumbers = Object.keys(days).map(Number).sort((a, b) => a - b);
 
+  const mapStops = trip.items
+    .filter((item) => item.listing.lat != null && item.listing.lng != null)
+    .map((item, idx) => ({
+      id: item.id,
+      lat: item.listing.lat!,
+      lng: item.listing.lng!,
+      title: item.listing.title,
+      index: idx + 1,
+    }));
+
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-8 text-center">
@@ -49,7 +63,16 @@ export default async function RutaPublicaPage({
           {dayNumbers.length > 1 && ` · ${dayNumbers.length} días`}
         </p>
         <p className="mt-2 text-xs text-muted">Compartida en Vivitravels</p>
+        <div className="mt-4">
+          <PrintButton />
+        </div>
       </div>
+
+      {mapStops.length > 0 && (
+        <div className="mb-6 print:hidden">
+          <TripMap stops={mapStops} />
+        </div>
+      )}
 
       {trip.items.length === 0 ? (
         <p className="text-center text-muted">Esta ruta todavía no tiene paradas.</p>

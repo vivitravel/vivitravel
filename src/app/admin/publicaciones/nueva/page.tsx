@@ -1,5 +1,7 @@
+export const instant = false;
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createEditorialListing } from "@/app/actions/admin";
 
@@ -18,6 +20,7 @@ const inp = "w-full rounded-xl border border-border-soft bg-white px-3 py-2 text
 const lbl = "block text-sm font-semibold text-navy mb-1";
 
 export default async function NuevaPublicacionPage() {
+  await connection();
   const { categories, destinations } = await getCatalog();
 
   return (

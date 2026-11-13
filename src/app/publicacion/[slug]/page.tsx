@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Globe, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { Facebook, Instagram } from "@/components/icons";
 import { TrackedLink, ViewTracker } from "@/components/tracking";
+import { MapboxMap } from "@/components/MapboxMap";
 import { externalUrl, formatPrice, mediaUrl, priceUnitLabel, videoEmbedUrl, whatsappLink } from "@/lib/format";
 import { getListingBySlug } from "@/lib/data";
 import { getMyFavoriteIds } from "@/lib/user-data";
@@ -260,15 +261,18 @@ async function Content({ params }: Pick<Props, "params">) {
 
           <section>
             <h2 className="mb-2 text-xl font-bold">Ubicación</h2>
-            <p className="flex items-start gap-2">
+            <p className="mb-3 flex items-start gap-2">
               <MapPin size={18} className="mt-0.5 shrink-0 text-turquoise" aria-hidden />
               <span>
                 {l.address ? `${l.address}, ` : ""}
                 {l.locality}, {l.province}
               </span>
             </p>
+            {l.lat != null && l.lng != null && (
+              <MapboxMap lat={l.lat} lng={l.lng} title={l.title} className="mb-3 h-64 w-full rounded-card overflow-hidden" />
+            )}
             {mapsHref && (
-              <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="btn btn-ghost mt-3 inline-flex">
+              <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="btn btn-ghost inline-flex">
                 <Navigation size={16} aria-hidden /> Cómo llegar
               </a>
             )}

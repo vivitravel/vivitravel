@@ -1,4 +1,6 @@
+export const instant = false;
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Planes — Admin" };
@@ -10,6 +12,7 @@ async function getPlans() {
 }
 
 export default async function PlanesAdminPage() {
+  await connection();
   const plans = await getPlans();
 
   return (

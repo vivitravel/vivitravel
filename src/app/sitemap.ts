@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { createPublicClient } from "@/lib/supabase/public";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vivitravel.vercel.app";
 
-export const dynamic = "force-dynamic";
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection(); // opts out of caching — regenera en cada request
   const db = createPublicClient();
 
   const [{ data: destinations }, { data: listings }] = await Promise.all([

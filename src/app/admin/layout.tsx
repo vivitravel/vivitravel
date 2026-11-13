@@ -1,5 +1,6 @@
 export const instant = false;
 
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, FileText, Building2, Users, MapPin, Tag, CreditCard } from "lucide-react";
@@ -16,6 +17,7 @@ const nav = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  await connection();
   const user = await getCurrentUser();
   if (!user || user.rol !== "admin") redirect("/");
 

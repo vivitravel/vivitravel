@@ -1,4 +1,6 @@
+export const instant = false;
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { approveProvider } from "@/app/actions/admin";
 
@@ -21,6 +23,7 @@ async function getProviders(aprobados?: string) {
 type Props = { searchParams: Promise<{ aprobados?: string }> };
 
 export default async function PrestadoresPage({ searchParams }: Props) {
+  await connection();
   const { aprobados } = await searchParams;
   const providers = await getProviders(aprobados);
 

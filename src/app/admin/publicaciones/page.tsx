@@ -1,5 +1,7 @@
+export const instant = false;
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/format";
 import { PublicacionActions } from "./PublicacionActions";
@@ -31,6 +33,7 @@ async function getListings(status?: string) {
 type Props = { searchParams: Promise<{ status?: string }> };
 
 export default async function PublicacionesPage({ searchParams }: Props) {
+  await connection();
   const { status } = await searchParams;
   const listings = await getListings(status);
 

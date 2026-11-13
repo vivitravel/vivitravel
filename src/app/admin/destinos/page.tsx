@@ -1,4 +1,6 @@
+export const instant = false;
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { upsertDestination, deleteDestination } from "@/app/actions/admin";
 
@@ -13,6 +15,7 @@ async function getDestinations() {
 }
 
 export default async function DestinosPage() {
+  await connection();
   const destinations = await getDestinations();
 
   return (

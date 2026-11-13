@@ -10,6 +10,8 @@ import { getTripById } from "@/lib/trip-data";
 import { deleteTrip, removeFromTrip, toggleTripPublic } from "@/app/actions/trip";
 import { mediaUrl } from "@/lib/format";
 import { CopyButton } from "./CopyButton";
+import { PrintButton } from "./PrintButton";
+import { TripMap } from "@/components/TripMap";
 
 export const metadata: Metadata = { title: "Mi ruta | Vivitravels" };
 
@@ -36,6 +38,16 @@ export default async function TripDetailPage({
     return acc;
   }, {});
   const dayNumbers = Object.keys(days).map(Number).sort((a, b) => a - b);
+
+  const mapStops = trip.items
+    .filter((item) => item.listing.lat != null && item.listing.lng != null)
+    .map((item, idx) => ({
+      id: item.id,
+      lat: item.listing.lat!,
+      lng: item.listing.lng!,
+      title: item.listing.title,
+      index: idx + 1,
+    }));
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
@@ -65,8 +77,9 @@ export default async function TripDetailPage({
               {trip.is_public ? "Pública" : "Compartir"}
             </button>
           </form>
+          <PrintButton />
           <form action={async () => { "use server"; await deleteTrip(id); redirect("/viajero/mi-ruta"); }}>
-            <button type="submit" className="rounded-xl border border-border-soft px-3 py-2 text-sm text-muted hover:border-red-300 hover:text-red-600 transition-colors">
+            <button type="submit" className="rounded-xl border border-border-soft px-3 py-2 text-sm text-muted hover:border-red-300 hover:text-red-600 transition-colors print:hidden">
               <Trash2 size={15} />
             </button>
           </form>
@@ -81,6 +94,12 @@ export default async function TripDetailPage({
             <p className="truncate text-sm text-navy">{shareUrl}</p>
           </div>
           <CopyButton text={shareUrl} />
+        </div>
+      )}
+
+      {mapStops.length > 0 && (
+        <div className="mb-6 print:hidden">
+          <TripMap stops={mapStops} />
         </div>
       )}
 

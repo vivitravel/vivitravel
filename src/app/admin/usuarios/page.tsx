@@ -1,4 +1,6 @@
+export const instant = false;
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ChangeRoleForm } from "./ChangeRoleForm";
 
@@ -21,6 +23,7 @@ async function getUsers() {
 }
 
 export default async function UsuariosPage() {
+  await connection();
   const users = await getUsers();
 
   return (

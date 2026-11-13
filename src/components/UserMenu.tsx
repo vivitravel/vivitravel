@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, Map } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import type { CurrentUser } from "@/lib/auth";
 
@@ -40,6 +40,13 @@ export function UserMenu({ user }: { user: CurrentUser }) {
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
             >
               <Heart size={14} /> Mis favoritos
+            </Link>
+            <Link
+              href="/viajero/mi-ruta"
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
+            >
+              <Map size={14} /> Mi ruta
             </Link>
             {user.rol === "prestador" || user.rol === "admin" ? (
               <Link

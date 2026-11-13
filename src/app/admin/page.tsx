@@ -1,5 +1,7 @@
+export const instant = false;
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Admin — Vivitravels" };
@@ -29,6 +31,7 @@ async function getMetrics() {
 }
 
 export default async function AdminDashboard() {
+  await connection();
   const m = await getMetrics();
 
   const cards = [

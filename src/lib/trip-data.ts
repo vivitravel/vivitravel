@@ -23,6 +23,8 @@ export type TripItem = {
     slug: string;
     locality: string;
     province: string;
+    lat: number | null;
+    lng: number | null;
     cover: string | null;
     category: { name: string; slug: string } | null;
   };
@@ -61,7 +63,7 @@ export async function getTripById(tripId: string): Promise<TripDetail | null> {
     .from("trips")
     .select(`id, title, is_public, share_token,
       trip_items(id, day, position, time_note, note,
-        listings(id, title, slug, locality, province,
+        listings(id, title, slug, locality, province, lat, lng,
           categories(name, slug),
           listing_media(storage_path, is_cover, sort_order)))`)
     .eq("id", tripId)
@@ -87,6 +89,8 @@ export async function getTripById(tripId: string): Promise<TripDetail | null> {
           slug: l?.slug,
           locality: l?.locality,
           province: l?.province,
+          lat: l?.lat ?? null,
+          lng: l?.lng ?? null,
           cover: media[0]?.storage_path ?? null,
           category: l?.categories ?? null,
         },
@@ -101,7 +105,7 @@ export async function getTripByToken(token: string): Promise<TripDetail | null> 
     .from("trips")
     .select(`id, title, is_public, share_token,
       trip_items(id, day, position, time_note, note,
-        listings(id, title, slug, locality, province,
+        listings(id, title, slug, locality, province, lat, lng,
           categories(name, slug),
           listing_media(storage_path, is_cover, sort_order)))`)
     .eq("share_token", token)
@@ -128,6 +132,8 @@ export async function getTripByToken(token: string): Promise<TripDetail | null> 
           slug: l?.slug,
           locality: l?.locality,
           province: l?.province,
+          lat: l?.lat ?? null,
+          lng: l?.lng ?? null,
           cover: media[0]?.storage_path ?? null,
           category: l?.categories ?? null,
         },
