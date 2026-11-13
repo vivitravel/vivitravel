@@ -13,6 +13,7 @@ export const metadata: Metadata = { title: "Mis favoritos | Vivitravels" };
 export default async function FavoritosPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/viajero/favoritos");
+  if (user.rol === "prestador" || user.rol === "admin") redirect("/prestador");
 
   const listings = await getMyFavoriteListings();
 

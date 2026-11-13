@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function login(prevState: string | null, formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -54,6 +55,12 @@ export async function registrar(prevState: string | null, formData: FormData) {
   // Si Supabase exige confirmación de email, session es null
   if (!data.session) {
     redirect("/registro/confirmacion");
+  }
+
+  // Prestador: asignar rol provider de inmediato (service role bypasses trigger uid check)
+  if (tipo === "prestador" && data.user) {
+    const admin = createAdminClient();
+    await admin.from("profiles").update({ role: "provider" }).eq("id", data.user.id);
   }
 
   revalidatePath("/", "layout");

@@ -13,6 +13,7 @@ export const metadata: Metadata = { title: "Mis rutas | Vivitravels" };
 export default async function MisRutasPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/viajero/mi-ruta");
+  if (user.rol === "prestador" || user.rol === "admin") redirect("/prestador");
 
   const trips = await getMyTrips();
 

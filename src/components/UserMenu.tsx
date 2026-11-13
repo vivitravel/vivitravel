@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Heart, Map } from "lucide-react";
+import { Heart, Map, LayoutDashboard } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import type { CurrentUser } from "@/lib/auth";
 
@@ -34,29 +34,32 @@ export function UserMenu({ user }: { user: CurrentUser }) {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border-soft bg-white p-1 shadow-lg">
-            <Link
-              href="/viajero/favoritos"
-              onClick={() => setOpen(false)}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
-            >
-              <Heart size={14} /> Mis favoritos
-            </Link>
-            <Link
-              href="/viajero/mi-ruta"
-              onClick={() => setOpen(false)}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
-            >
-              <Map size={14} /> Mi ruta
-            </Link>
-            {user.rol === "prestador" || user.rol === "admin" ? (
+            {user.rol === "viajero" ? (
+              <>
+                <Link
+                  href="/viajero/favoritos"
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
+                >
+                  <Heart size={14} /> Mis favoritos
+                </Link>
+                <Link
+                  href="/viajero/mi-ruta"
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
+                >
+                  <Map size={14} /> Mi ruta
+                </Link>
+              </>
+            ) : (
               <Link
                 href="/prestador"
                 onClick={() => setOpen(false)}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-navy hover:bg-surface"
               >
-                Portal del prestador
+                <LayoutDashboard size={14} /> Mi panel
               </Link>
-            ) : null}
+            )}
             <div className="my-1 border-t border-border-soft" />
             <button
               type="button"
