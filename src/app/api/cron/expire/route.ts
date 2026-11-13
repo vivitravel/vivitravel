@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   const warnDate = warn.toISOString().slice(0, 10);
 
   const { data: expiring } = await supabase
-    .from("provider_subscriptions")
+    .from("subscriptions")
     .select(`
       expires_at,
       plans ( name ),
