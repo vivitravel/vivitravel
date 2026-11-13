@@ -1,10 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { registrar } from "@/app/actions/auth";
 
 export function RegistroForm() {
+  const searchParams = useSearchParams();
+  const tipoPrefill = searchParams.get("tipo") === "prestador" ? "prestador" : "viajero";
+  const [tipo, setTipo] = useState<"viajero" | "prestador">(tipoPrefill);
   const [error, action, pending] = useActionState(registrar, null);
+
+  const inputCls = "rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20";
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -14,49 +20,49 @@ export function RegistroForm() {
         </p>
       )}
 
+      {/* Selector de rol */}
+      <div className="flex gap-2 rounded-xl border border-border-soft p-1">
+        {(["viajero", "prestador"] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTipo(t)}
+            className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+              tipo === t ? "bg-navy text-white" : "text-muted hover:text-navy"
+            }`}
+          >
+            {t === "viajero" ? "Soy viajero" : "Soy prestador"}
+          </button>
+        ))}
+      </div>
+      <input type="hidden" name="tipo" value={tipo} />
+
       <div className="flex flex-col gap-1.5">
         <label htmlFor="nombre" className="text-sm font-semibold text-navy">
           Tu nombre
         </label>
         <input
-          id="nombre"
-          name="nombre"
-          type="text"
-          autoComplete="given-name"
-          required
-          className="rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20"
-          placeholder="María"
+          id="nombre" name="nombre" type="text"
+          autoComplete="given-name" required
+          className={inputCls} placeholder="María"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="email" className="text-sm font-semibold text-navy">
-          Email
-        </label>
+        <label htmlFor="email" className="text-sm font-semibold text-navy">Email</label>
         <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          className="rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20"
-          placeholder="tu@email.com"
+          id="email" name="email" type="email"
+          autoComplete="email" required
+          className={inputCls} placeholder="tu@email.com"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="password" className="text-sm font-semibold text-navy">
-          Contraseña
-        </label>
+        <label htmlFor="password" className="text-sm font-semibold text-navy">Contraseña</label>
         <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={6}
-          className="rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20"
-          placeholder="Mínimo 6 caracteres"
+          id="password" name="password" type="password"
+          autoComplete="new-password" required minLength={6}
+          className={inputCls} placeholder="Mínimo 6 caracteres"
         />
       </div>
 
@@ -65,13 +71,9 @@ export function RegistroForm() {
           Confirmá la contraseña
         </label>
         <input
-          id="confirmar"
-          name="confirmar"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20"
-          placeholder="••••••••"
+          id="confirmar" name="confirmar" type="password"
+          autoComplete="new-password" required
+          className={inputCls} placeholder="••••••••"
         />
       </div>
 
@@ -80,7 +82,7 @@ export function RegistroForm() {
         disabled={pending}
         className="btn-primary mt-2 rounded-lg px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
       >
-        {pending ? "Creando cuenta…" : "Crear cuenta"}
+        {pending ? "Creando cuenta…" : tipo === "prestador" ? "Crear cuenta de prestador" : "Crear cuenta"}
       </button>
     </form>
   );

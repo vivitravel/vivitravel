@@ -29,6 +29,7 @@ export async function registrar(prevState: string | null, formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirmar = String(formData.get("confirmar") ?? "");
+  const tipo = String(formData.get("tipo") ?? "viajero");
 
   if (!nombre || !email || !password) return "Completá todos los campos.";
   if (password !== confirmar) return "Las contraseñas no coinciden.";
@@ -56,7 +57,7 @@ export async function registrar(prevState: string | null, formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect(tipo === "prestador" ? "/prestador/onboarding" : "/");
 }
 
 export async function logout() {
