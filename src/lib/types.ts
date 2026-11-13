@@ -26,9 +26,10 @@ export type ListingCardData = {
   title: string;
   locality: string;
   province: string;
-  price_from: number;
-  price_unit: PriceUnit;
+  price_from: number | null;
+  price_unit: PriceUnit | null;
   featured: boolean;
+  is_editorial: boolean;
   category: { name: string; slug: string } | null;
   destination: { name: string; slug: string } | null;
   cover: string | null;

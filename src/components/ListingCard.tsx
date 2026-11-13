@@ -38,6 +38,11 @@ export function ListingCard({
             Destacado
           </span>
         )}
+        {listing.is_editorial && !listing.featured && (
+          <span className="absolute left-3 top-3 rounded-full bg-turquoise px-3 py-1 text-xs font-bold text-white">
+            Gratuito
+          </span>
+        )}
         <div className="absolute right-3 top-3">
           <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
         </div>
@@ -57,9 +62,15 @@ export function ListingCard({
         </p>
         <div className="mt-auto flex items-end justify-between pt-2">
           <p className="text-sm">
-            <span className="text-muted">Desde </span>
-            <span className="text-lg font-bold">{formatPrice(listing.price_from)}</span>
-            {unit && <span className="text-muted"> {unit}</span>}
+            {listing.is_editorial ? (
+              <span className="text-lg font-bold text-turquoise">Gratuito</span>
+            ) : (
+              <>
+                <span className="text-muted">Desde </span>
+                <span className="text-lg font-bold">{formatPrice(listing.price_from ?? 0)}</span>
+                {unit && <span className="text-muted"> {unit}</span>}
+              </>
+            )}
           </p>
           <Link href={`/publicacion/${listing.slug}`} className="btn btn-primary !px-4 !py-2 text-sm">
             Ver más

@@ -2,7 +2,8 @@ import type { PriceUnit } from "./types";
 
 const ars = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
 
-export function formatPrice(value: number) {
+export function formatPrice(value: number | null) {
+  if (value == null) return "";
   return `ARS ${ars.format(value)}`;
 }
 
@@ -14,7 +15,8 @@ const UNIT_LABEL: Record<PriceUnit, string> = {
   other: "",
 };
 
-export function priceUnitLabel(unit: PriceUnit) {
+export function priceUnitLabel(unit: PriceUnit | null) {
+  if (!unit) return "";
   return UNIT_LABEL[unit];
 }
 

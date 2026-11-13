@@ -286,11 +286,15 @@ async function Content({ params }: Pick<Props, "params">) {
             )}
             <h1 className="text-2xl font-bold leading-tight">{l.title}</h1>
             {p && <p className="text-sm text-muted">Ofrece {p.business_name}</p>}
-            <p>
-              <span className="text-muted">Desde </span>
-              <span className="text-2xl font-bold">{formatPrice(l.price_from)}</span>
-              {unit && <span className="text-muted"> {unit}</span>}
-            </p>
+            {l.is_editorial ? (
+              <p className="text-2xl font-bold text-turquoise">Gratuito</p>
+            ) : (
+              <p>
+                <span className="text-muted">Desde </span>
+                <span className="text-2xl font-bold">{formatPrice(l.price_from)}</span>
+                {unit && <span className="text-muted"> {unit}</span>}
+              </p>
+            )}
 
             <FavoriteButton listingId={l.id} initialFavorited={favoriteIds.has(l.id)} size="detail" />
             <AddToTripButton listingId={l.id} trips={trips.map((t) => ({ id: t.id, title: t.title }))} />

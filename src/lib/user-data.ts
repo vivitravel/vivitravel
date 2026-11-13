@@ -24,7 +24,7 @@ export async function getMyFavoriteListings() {
     .select(`
       listing_id,
       listings (
-        id, slug, title, locality, province, price_from, price_unit, featured,
+        id, slug, title, locality, province, price_from, price_unit, featured, is_editorial,
         categories ( name, slug ),
         listing_media ( storage_path, is_cover, sort_order )
       )

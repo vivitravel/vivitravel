@@ -14,7 +14,7 @@ import type {
 /* Lecturas públicas del catálogo. Usan el cliente anónimo: la seguridad la da RLS. */
 
 const CARD_COLUMNS =
-  "id, slug, title, locality, province, price_from, price_unit, featured";
+  "id, slug, title, locality, province, price_from, price_unit, featured, is_editorial";
 
 type MediaRow = { storage_path: string; is_cover: boolean; sort_order: number };
 
@@ -34,9 +34,10 @@ function toCard(row: any): ListingCardData {
     title: row.title,
     locality: row.locality,
     province: row.province,
-    price_from: Number(row.price_from),
-    price_unit: row.price_unit,
+    price_from: row.price_from != null ? Number(row.price_from) : null,
+    price_unit: row.price_unit ?? null,
     featured: row.featured,
+    is_editorial: row.is_editorial ?? false,
     category: row.categories ?? null,
     destination: row.destinations ?? null,
     cover: pickCover(row.listing_media),
