@@ -1,13 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { registrar } from "@/app/actions/auth";
 
 export function RegistroForm() {
   const searchParams = useSearchParams();
-  const tipoPrefill = searchParams.get("tipo") === "prestador" ? "prestador" : "viajero";
-  const [tipo, setTipo] = useState<"viajero" | "prestador">(tipoPrefill);
+  const tipo = searchParams.get("tipo") === "prestador" ? "prestador" : "viajero";
   const [error, action, pending] = useActionState(registrar, null);
 
   const inputCls = "rounded-lg border border-border-soft bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20";
@@ -20,21 +19,6 @@ export function RegistroForm() {
         </p>
       )}
 
-      {/* Selector de rol */}
-      <div className="flex gap-2 rounded-xl border border-border-soft p-1">
-        {(["viajero", "prestador"] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTipo(t)}
-            className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
-              tipo === t ? "bg-navy text-white" : "text-muted hover:text-navy"
-            }`}
-          >
-            {t === "viajero" ? "Soy viajero" : "Soy prestador"}
-          </button>
-        ))}
-      </div>
       <input type="hidden" name="tipo" value={tipo} />
 
       <div className="flex flex-col gap-1.5">
