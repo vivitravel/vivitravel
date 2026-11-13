@@ -13,16 +13,15 @@ export const metadata: Metadata = { title: "Mis rutas | Vivitravels" };
 export default async function MisRutasPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/viajero/mi-ruta");
-  if (user.rol === "prestador" || user.rol === "admin") redirect("/prestador");
 
   const trips = await getMyTrips();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    <div>
       <div className="mb-8 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <MapPin size={22} className="text-turquoise" />
-          <h1 className="text-2xl font-bold text-navy">Mis rutas</h1>
+          <h2 className="text-xl font-bold text-navy">Mis rutas</h2>
         </div>
         <form action={async () => { "use server"; const id = await createTrip("Mi ruta"); redirect(`/viajero/mi-ruta/${id}`); }}>
           <button type="submit" className="btn btn-secondary inline-flex gap-2">
@@ -66,6 +65,6 @@ export default async function MisRutasPage() {
           ))}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

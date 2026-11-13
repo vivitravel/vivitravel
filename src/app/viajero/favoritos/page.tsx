@@ -13,16 +13,11 @@ export const metadata: Metadata = { title: "Mis favoritos | Vivitravels" };
 export default async function FavoritosPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/viajero/favoritos");
-  if (user.rol === "prestador" || user.rol === "admin") redirect("/prestador");
 
   const listings = await getMyFavoriteListings();
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <div className="mb-8 flex items-center gap-3">
-        <Heart size={22} className="fill-red-500 text-red-500" />
-        <h1 className="text-2xl font-bold text-navy">Mis favoritos</h1>
-      </div>
+    <div>
 
       {listings.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border-soft p-16 text-center">
@@ -62,6 +57,6 @@ export default async function FavoritosPage() {
           })}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

@@ -28,6 +28,13 @@ export function UserMenu({ user }: { user: CurrentUser }) {
           {(user.nombre || user.email || "?")[0].toUpperCase()}
         </span>
         <span className="hidden sm:inline">{user.nombre || user.email.split("@")[0]}</span>
+        <span className={`hidden sm:inline rounded-full px-2 py-0.5 text-xs font-bold ${
+          user.rol === "prestador" || user.rol === "admin"
+            ? "bg-turquoise/15 text-turquoise"
+            : "bg-navy/10 text-navy/50"
+        }`}>
+          {user.rol === "admin" ? "Admin" : user.rol === "prestador" ? "Prestador" : "Viajero"}
+        </span>
       </button>
 
       {open && (
