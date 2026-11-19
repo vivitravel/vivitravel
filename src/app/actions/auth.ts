@@ -12,7 +12,7 @@ export async function login(prevState: string | null, formData: FormData) {
   if (!email || !password) return "Completá todos los campos.";
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     if (error.message.includes("Invalid login credentials")) {
@@ -21,8 +21,21 @@ export async function login(prevState: string | null, formData: FormData) {
     return "No pudimos iniciar sesión. Intentá de nuevo.";
   }
 
+  // Leer rol para redirigir al lugar correcto
+  let destino = "/";
+  if (data.user) {
+    const { data: perfil } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+    if (perfil?.role === "provider" || perfil?.role === "admin") {
+      destino = "/prestador";
+    }
+  }
+
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect(destino);
 }
 
 export async function registrar(prevState: string | null, formData: FormData) {

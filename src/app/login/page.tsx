@@ -9,6 +9,9 @@ export default function LoginPage() {
     <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-16">
       <div className="w-full max-w-sm">
         <h1 className="mb-2 text-2xl font-bold text-navy">Iniciá sesión</h1>
+        <p className="mb-6 text-sm text-navy/60">
+          Ingresá tanto si sos <strong className="text-navy">viajero</strong> como si sos <strong className="text-navy">prestador</strong>. Te llevamos a tu panel automáticamente.
+        </p>
         <p className="mb-8 text-sm text-navy/60">
           ¿No tenés cuenta?{" "}
           <Link href="/registro" className="font-semibold text-turquoise hover:underline">
